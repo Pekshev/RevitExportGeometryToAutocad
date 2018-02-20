@@ -26,16 +26,51 @@ namespace RevitGeometryExporter
                     if (geometryObject is Solid solid)
                     {
                         foreach (Face face in solid.Faces)
-                        {
                             foreach (EdgeArray edgeArray in face.EdgeLoops)
-                            {
                                 foreach (Edge edge in edgeArray)
-                                {
                                     curves.Add(edge.AsCurve());
+                    }
+                }
+            }
+            ExportCurves(curves, header);
+        }
+
+        public static void ExportFamilyInstancesByFaces(List<FamilyInstance> families, string header, bool includeNonVisibleObjects)
+        {
+            Options options = new Options
+            {
+                IncludeNonVisibleObjects = includeNonVisibleObjects
+            };
+            List<Curve> curves = new List<Curve>();
+            foreach (FamilyInstance familyInstance in families)
+            {
+                foreach (GeometryObject geometryObject in familyInstance.get_Geometry(options))
+                {
+                    GeometryInstance geometryInstance = geometryObject as GeometryInstance;
+                    if (geometryInstance != null)
+                    {
+                        GeometryElement instanceGeometry = geometryInstance.GetInstanceGeometry();
+                        if (instanceGeometry != null)
+                        {
+                            foreach (GeometryObject o in instanceGeometry)
+                            {
+                                if (o is Solid solid)
+                                {
+                                    foreach (Face solidFace in solid.Faces)
+                                        foreach (EdgeArray edgeArray in solidFace.EdgeLoops)
+                                            foreach (Edge edge in edgeArray)
+                                                curves.Add(edge.AsCurve());
+                                }
+                                if (o is Face face)
+                                {
+                                    foreach (EdgeArray edgeArray in face.EdgeLoops)
+                                        foreach (Edge edge in edgeArray)
+                                            curves.Add(edge.AsCurve());
                                 }
                             }
                         }
                     }
+
                 }
             }
             ExportCurves(curves, header);
@@ -53,16 +88,6 @@ namespace RevitGeometryExporter
                 {
                     faces.Add(solidFace);
                 }
-            }
-            if (faces.Any())
-                ExportFaces(faces, header);
-        }
-        public static void ExportSolidByFaces(Solid solid, string header)
-        {
-            List<Face> faces = new List<Face>();
-            foreach (Face solidFace in solid.Faces)
-            {
-                faces.Add(solidFace);
             }
             if (faces.Any())
                 ExportFaces(faces, header);

@@ -34,6 +34,19 @@ namespace RevitTestCommand
                     }
                     ExportGeometryToXml.ExportWallsByFaces(wallsToExport, "walls");
                 }
+                // families
+                selectionResult = selection.PickObjects(ObjectType.Element, "Select families:");
+                if (selectionResult.Any())
+                {
+                    List<FamilyInstance> familyInstances = new List<FamilyInstance>();
+                    foreach (Reference reference in selectionResult)
+                    {
+                        Element el = doc.GetElement(reference);
+                        if(el is FamilyInstance familyInstance)
+                            familyInstances.Add(familyInstance);
+                    }
+                    ExportGeometryToXml.ExportFamilyInstancesByFaces(familyInstances, "families", false);
+                }
             }
             catch (OperationCanceledException)
             {
