@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2002
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CadDrawGeometry", "CadDrawGeometry\CadDrawGeometry.csproj", "{ED8C979A-6B2C-47C2-869E-BE0B11C8A533}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RevitGeometryExporter", "RevitGeometryExporter\RevitGeometryExporter.csproj", "{D61C1834-9A91-483B-BFB3-96A06E9A9F3F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RevitTestCommand", "RevitTestCommand\RevitTestCommand.csproj", "{3D0ABFC2-7933-4D74-A674-674ABF9A59DF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ED8C979A-6B2C-47C2-869E-BE0B11C8A533}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED8C979A-6B2C-47C2-869E-BE0B11C8A533}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED8C979A-6B2C-47C2-869E-BE0B11C8A533}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED8C979A-6B2C-47C2-869E-BE0B11C8A533}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D61C1834-9A91-483B-BFB3-96A06E9A9F3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D61C1834-9A91-483B-BFB3-96A06E9A9F3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D61C1834-9A91-483B-BFB3-96A06E9A9F3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D61C1834-9A91-483B-BFB3-96A06E9A9F3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D0ABFC2-7933-4D74-A674-674ABF9A59DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D0ABFC2-7933-4D74-A674-674ABF9A59DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D0ABFC2-7933-4D74-A674-674ABF9A59DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D0ABFC2-7933-4D74-A674-674ABF9A59DF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {41FDCA6A-B1BC-4683-A7EB-36573AC79989}
+	EndGlobalSection
+EndGlobal
