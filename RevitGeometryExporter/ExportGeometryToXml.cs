@@ -109,6 +109,23 @@ namespace RevitGeometryExporter
             }
             ExportCurves(wallCurves, header);
         }
+        public static void ExportFaces(List<PlanarFace> planarFaces, string header)
+        {
+            List<Curve> wallCurves = new List<Curve>();
+
+            foreach (PlanarFace planarFace in planarFaces)
+            {
+                EdgeArrayArray edgeArrayArray = planarFace.EdgeLoops;
+                foreach (EdgeArray edgeArray in edgeArrayArray)
+                {
+                    foreach (Edge edge in edgeArray)
+                    {
+                        wallCurves.Add(edge.AsCurve());
+                    }
+                }
+            }
+            ExportCurves(wallCurves, header);
+        }
         public static void ExportCurves(List<Curve> curves, string header)
         {
             CheckFolder();
