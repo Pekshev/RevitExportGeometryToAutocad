@@ -154,6 +154,16 @@ namespace RevitGeometryExporter
 
             root.Save(Path.Combine(FolderName, GetFileName(header)));
         }
+
+        public static void ExportEdges(List<Edge> edges, string header)
+        {
+            List<Curve> curves = new List<Curve>();
+            foreach (Edge edge in edges)
+            {
+                curves.Add(edge.AsCurve());
+            }
+            ExportCurves(curves, header);
+        }
         public static void ExportLines(List<Line> lines, string header)
         {
             CheckFolder();
