@@ -48,6 +48,8 @@ ExportGeometryToXml.ExportFamilyInstancesByFaces(familyInstances, "families", fa
 
 **DrawFromOneXml** – отрисовка геометрии из одного указанного xml-файла
 
+**DrawFromSeveralXml** – отрисовка геометрии из нескольких указанных xml-файлов. По аналогии с DrawFromOneXml, только в окне выбор файлов включена возможность мультивыбора (через Shift или Ctrl)
+
 **DrawXmlFromFolder** - отрисовка геометрии из указанной папки в который должны располагаться xml-файлы
 
 ## Пример
