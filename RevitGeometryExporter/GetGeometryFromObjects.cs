@@ -32,23 +32,43 @@ namespace RevitGeometryExporter
         {
             try
             {
-                XElement arcXElement = new XElement("Arc");
-                XElement element = new XElement("StartPoint");
-                element.SetAttributeValue("X", arc.GetEndPoint(0).X);
-                element.SetAttributeValue("Y", arc.GetEndPoint(0).Y);
-                element.SetAttributeValue("Z", arc.GetEndPoint(0).Z);
-                arcXElement.Add(element);
-                element = new XElement("EndPoint");
-                element.SetAttributeValue("X", arc.GetEndPoint(1).X);
-                element.SetAttributeValue("Y", arc.GetEndPoint(1).Y);
-                element.SetAttributeValue("Z", arc.GetEndPoint(1).Z);
-                arcXElement.Add(element);
-                element = new XElement("PointOnArc");
-                element.SetAttributeValue("X", arc.Tessellate()[1].X);
-                element.SetAttributeValue("Y", arc.Tessellate()[1].Y);
-                element.SetAttributeValue("Z", arc.Tessellate()[1].Z);
-                arcXElement.Add(element);
-                return arcXElement;
+                if (arc.IsBound) // arc!
+                {
+                    XElement arcXElement = new XElement("Arc");
+                    XElement element = new XElement("StartPoint");
+                    element.SetAttributeValue("X", arc.GetEndPoint(0).X);
+                    element.SetAttributeValue("Y", arc.GetEndPoint(0).Y);
+                    element.SetAttributeValue("Z", arc.GetEndPoint(0).Z);
+                    arcXElement.Add(element);
+                    element = new XElement("EndPoint");
+                    element.SetAttributeValue("X", arc.GetEndPoint(1).X);
+                    element.SetAttributeValue("Y", arc.GetEndPoint(1).Y);
+                    element.SetAttributeValue("Z", arc.GetEndPoint(1).Z);
+                    arcXElement.Add(element);
+                    element = new XElement("PointOnArc");
+                    element.SetAttributeValue("X", arc.Tessellate()[1].X);
+                    element.SetAttributeValue("Y", arc.Tessellate()[1].Y);
+                    element.SetAttributeValue("Z", arc.Tessellate()[1].Z);
+                    arcXElement.Add(element);
+                    return arcXElement;
+                }
+                else // circle!
+                {
+                    XElement circleXElement = new XElement("Circle");
+                    XElement centerPoint = new XElement("CenterPoint");
+                    centerPoint.SetAttributeValue("X", arc.Center.X);
+                    centerPoint.SetAttributeValue("Y", arc.Center.Y);
+                    centerPoint.SetAttributeValue("Z", arc.Center.Z);
+                    circleXElement.Add(centerPoint);
+                    XElement vector = new XElement("VectorNormal");
+                    vector.SetAttributeValue("X", arc.Normal.X);
+                    vector.SetAttributeValue("Y", arc.Normal.Y);
+                    vector.SetAttributeValue("Z", arc.Normal.Z);
+                    circleXElement.Add(vector);
+
+                    circleXElement.SetElementValue("Radius", arc.Radius);
+                    return circleXElement;
+                }
             }
             catch (Exception)
             {

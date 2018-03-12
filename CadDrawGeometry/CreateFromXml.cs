@@ -16,38 +16,7 @@ namespace CadDrawGeometry
         {
             OpenFileDialog ofd = new OpenFileDialog();
             if (ofd.ShowDialog() != DialogResult.OK) return;
-            XElement fileXElement = XElement.Load(ofd.FileName);
-            var doc = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument;
-            var db = doc.Database;
-            try
-            {
-                using (var tr = doc.TransactionManager.StartTransaction())
-                {
-                    BlockTable bt = tr.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
-                    BlockTableRecord btr =
-                        tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
-                    // from root
-                    CreateLines(fileXElement, tr, btr);
-                    CreateArcs(fileXElement, tr, btr);
-                    CreatePoints(fileXElement, tr, btr);
-                    // all in one
-                    XElement lines = fileXElement.Element("Lines");
-                    if (lines != null)
-                        CreateLines(lines, tr, btr);
-                    XElement arcs = fileXElement.Element("Arcs");
-                    if (arcs != null)
-                        CreateArcs(arcs, tr, btr);
-                    XElement points = fileXElement.Element("Points");
-                    if (points != null) CreatePoints(points, tr, btr);
-
-                    tr.Commit();
-                }
-            }
-            catch (System.Exception exception)
-            {
-                Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument.Editor.WriteMessage(
-                    "\nError: " + exception.Message);
-            }
+            DrawGeometryFromFile(ofd.FileName);
         }
         /// <summary>Отрисовка геометрии из указанной папки в который должны располагаться xml-файлы</summary>
         [CommandMethod("DrawXmlFromFolder")]
@@ -59,38 +28,58 @@ namespace CadDrawGeometry
                 var files = Directory.GetFiles(fbd.SelectedPath, "*.xml", SearchOption.TopDirectoryOnly);
                 foreach (string file in files)
                 {
-                    try
-                    {
-                        XElement fileXElement = XElement.Load(file);
-                        var doc = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument;
-                        var db = doc.Database;
-                        using (var tr = doc.TransactionManager.StartTransaction())
-                        {
-                            BlockTable bt = tr.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
-                            BlockTableRecord btr = tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
-                            // from root
-                            CreateLines(fileXElement, tr, btr);
-                            CreateArcs(fileXElement, tr, btr);
-                            CreatePoints(fileXElement, tr, btr);
-                            // all in one
-                            XElement lines = fileXElement.Element("Lines");
-                            if (lines != null)
-                                CreateLines(lines, tr, btr);
-                            XElement arcs = fileXElement.Element("Arcs");
-                            if (arcs != null)
-                                CreateArcs(arcs, tr, btr);
-                            XElement points = fileXElement.Element("Points");
-                            if (points != null) CreatePoints(points, tr, btr);
-
-                            tr.Commit();
-                        }
-                    }
-                    catch (System.Exception exception)
-                    {
-                        Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument.Editor.WriteMessage(
-                            "\nError: " + exception.Message);
-                    }
+                    DrawGeometryFromFile(file);
                 }
+            }
+        }
+        /// <summary>Отрисовка геометрии из нескольких указанных xml-файлов</summary>
+        [CommandMethod("DrawFromSeveralXml")]
+        public void CreateFromSeveralFiles()
+        {
+            OpenFileDialog ofd = new OpenFileDialog { Multiselect = true };
+            if (ofd.ShowDialog() != DialogResult.OK) return;
+            foreach (string fileName in ofd.FileNames)
+            {
+                DrawGeometryFromFile(fileName);
+            }
+        }
+
+        private void DrawGeometryFromFile(string file)
+        {
+            try
+            {
+                XElement fileXElement = XElement.Load(file);
+                var doc = Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument;
+                var db = doc.Database;
+                using (var tr = doc.TransactionManager.StartTransaction())
+                {
+                    BlockTable bt = tr.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
+                    BlockTableRecord btr = tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+                    // from root
+                    CreateLines(fileXElement, tr, btr);
+                    CreateArcs(fileXElement, tr, btr);
+                    CreateCircles(fileXElement, tr, btr);
+                    CreatePoints(fileXElement, tr, btr);
+                    // all in one
+                    XElement lines = fileXElement.Element("Lines");
+                    if (lines != null)
+                        CreateLines(lines, tr, btr);
+                    XElement arcs = fileXElement.Element("Arcs");
+                    if (arcs != null)
+                    {
+                        CreateArcs(arcs, tr, btr);
+                        CreateCircles(arcs, tr, btr);
+                    }
+                    XElement points = fileXElement.Element("Points");
+                    if (points != null) CreatePoints(points, tr, btr);
+
+                    tr.Commit();
+                }
+            }
+            catch (System.Exception exception)
+            {
+                Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument.Editor.WriteMessage(
+                    "\nError: " + exception.Message);
             }
         }
         /// <summary>Создание отрезков</summary>
@@ -153,6 +142,30 @@ namespace CadDrawGeometry
                 }
                 // dispose CircularArc3d
                 carc.Dispose();
+            }
+        }
+        /// <summary>Создание окружностей</summary>
+        private void CreateCircles(XElement root, Transaction tr, BlockTableRecord btr)
+        {
+            foreach (XElement curveXelement in root.Elements("Circle"))
+            {
+                XElement centerPointXElement = curveXelement.Element("CenterPoint");
+                Point3d centerPoint = new Point3d(
+                    Convert.ToDouble(centerPointXElement?.Attribute("X")?.Value),
+                    Convert.ToDouble(centerPointXElement?.Attribute("Y")?.Value),
+                    Convert.ToDouble(centerPointXElement?.Attribute("Z")?.Value));
+                XElement vectorNormalXElement = curveXelement.Element("VectorNormal");
+                Vector3d vectorNormal = new Vector3d(
+                    Convert.ToDouble(vectorNormalXElement?.Attribute("X")?.Value),
+                    Convert.ToDouble(vectorNormalXElement?.Attribute("Y")?.Value),
+                    Convert.ToDouble(vectorNormalXElement?.Attribute("Z")?.Value));
+
+
+                using (Circle circle = new Circle(centerPoint, vectorNormal, Convert.ToDouble(curveXelement.Element("Radius")?.Value)))
+                {
+                    btr.AppendEntity(circle);
+                    tr.AddNewlyCreatedDBObject(circle, true);
+                }
             }
         }
         /// <summary>Создание точек</summary>
