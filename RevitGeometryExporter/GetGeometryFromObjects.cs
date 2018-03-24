@@ -10,18 +10,36 @@ namespace RevitGeometryExporter
         {
             try
             {
-                XElement lineXElement = new XElement("Line");
-                XElement startPointXElement = new XElement("StartPoint");
-                startPointXElement.SetAttributeValue("X", line.GetEndPoint(0).X);
-                startPointXElement.SetAttributeValue("Y", line.GetEndPoint(0).Y);
-                startPointXElement.SetAttributeValue("Z", line.GetEndPoint(0).Z);
-                lineXElement.Add(startPointXElement);
-                XElement endPointXElement = new XElement("EndPoint");
-                endPointXElement.SetAttributeValue("X", line.GetEndPoint(1).X);
-                endPointXElement.SetAttributeValue("Y", line.GetEndPoint(1).Y);
-                endPointXElement.SetAttributeValue("Z", line.GetEndPoint(1).Z);
-                lineXElement.Add(endPointXElement);
-                return lineXElement;
+                if (line.IsBound)
+                {
+                    XElement lineXElement = new XElement("Line");
+                    XElement startPointXElement = new XElement("StartPoint");
+                    startPointXElement.SetAttributeValue("X", line.GetEndPoint(0).X);
+                    startPointXElement.SetAttributeValue("Y", line.GetEndPoint(0).Y);
+                    startPointXElement.SetAttributeValue("Z", line.GetEndPoint(0).Z);
+                    lineXElement.Add(startPointXElement);
+                    XElement endPointXElement = new XElement("EndPoint");
+                    endPointXElement.SetAttributeValue("X", line.GetEndPoint(1).X);
+                    endPointXElement.SetAttributeValue("Y", line.GetEndPoint(1).Y);
+                    endPointXElement.SetAttributeValue("Z", line.GetEndPoint(1).Z);
+                    lineXElement.Add(endPointXElement);
+                    return lineXElement;
+                }
+                else
+                {
+                    XElement rayXElement = new XElement("Ray");
+                    XElement originPointXElement = new XElement("Origin");
+                    originPointXElement.SetAttributeValue("X", line.Origin.X);
+                    originPointXElement.SetAttributeValue("Y", line.Origin.Y);
+                    originPointXElement.SetAttributeValue("Z", line.Origin.Z);
+                    rayXElement.Add(originPointXElement);
+                    XElement directionXElement = new XElement("Direction");
+                    directionXElement.SetAttributeValue("X", line.Direction.X);
+                    directionXElement.SetAttributeValue("Y", line.Direction.Y);
+                    directionXElement.SetAttributeValue("Z", line.Direction.Z);
+                    rayXElement.Add(directionXElement);
+                    return rayXElement;
+                }
             }
             catch (Exception)
             {

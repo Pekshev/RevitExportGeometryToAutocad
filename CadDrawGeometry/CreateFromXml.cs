@@ -57,13 +57,17 @@ namespace CadDrawGeometry
                     BlockTableRecord btr = tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
                     // from root
                     CreateLines(fileXElement, tr, btr);
+                    CreateRays(fileXElement, tr, btr);
                     CreateArcs(fileXElement, tr, btr);
                     CreateCircles(fileXElement, tr, btr);
                     CreatePoints(fileXElement, tr, btr);
                     // all in one
                     XElement lines = fileXElement.Element("Lines");
                     if (lines != null)
+                    {
                         CreateLines(lines, tr, btr);
+                        CreateRays(lines, tr, btr);
+                    }
                     XElement arcs = fileXElement.Element("Arcs");
                     if (arcs != null)
                     {
@@ -165,6 +169,31 @@ namespace CadDrawGeometry
                 {
                     btr.AppendEntity(circle);
                     tr.AddNewlyCreatedDBObject(circle, true);
+                }
+            }
+        }
+        /// <summary>Создание лучей</summary>
+        private void CreateRays(XElement root, Transaction tr, BlockTableRecord btr)
+        {
+            foreach (XElement rayXElement in root.Elements("Ray"))
+            {
+                XElement originXElement = rayXElement.Element("Origin");
+                Point3d originPoint = new Point3d(
+                    Convert.ToDouble(originXElement?.Attribute("X")?.Value),
+                    Convert.ToDouble(originXElement?.Attribute("Y")?.Value),
+                    Convert.ToDouble(originXElement?.Attribute("Z")?.Value));
+                XElement directionXElement = rayXElement.Element("Direction");
+                Vector3d direction = new Vector3d(
+                    Convert.ToDouble(directionXElement?.Attribute("X")?.Value),
+                    Convert.ToDouble(directionXElement?.Attribute("Y")?.Value),
+                    Convert.ToDouble(directionXElement?.Attribute("Z")?.Value));
+
+                using (Ray ray = new Ray())
+                {
+                    ray.BasePoint = originPoint;
+                    ray.UnitDir = direction;
+                    btr.AppendEntity(ray);
+                    tr.AddNewlyCreatedDBObject(ray, true);
                 }
             }
         }
