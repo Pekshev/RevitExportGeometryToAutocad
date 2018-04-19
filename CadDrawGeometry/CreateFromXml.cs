@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Xml.Linq;
 using Autodesk.AutoCAD.DatabaseServices;
 using Autodesk.AutoCAD.Geometry;
@@ -92,15 +91,9 @@ namespace CadDrawGeometry
             foreach (XElement curveXelement in root.Elements("Line"))
             {
                 XElement startPointXElement = curveXelement.Element("StartPoint");
-                Point3d startPoint = new Point3d(
-                    Convert.ToDouble(startPointXElement?.Attribute("X")?.Value),
-                    Convert.ToDouble(startPointXElement?.Attribute("Y")?.Value),
-                    Convert.ToDouble(startPointXElement?.Attribute("Z")?.Value));
+                Point3d startPoint = startPointXElement.GetAsPoint();
                 XElement endPointXElement = curveXelement.Element("EndPoint");
-                Point3d endPoint = new Point3d(
-                    Convert.ToDouble(endPointXElement?.Attribute("X")?.Value),
-                    Convert.ToDouble(endPointXElement?.Attribute("Y")?.Value),
-                    Convert.ToDouble(endPointXElement?.Attribute("Z")?.Value));
+                Point3d endPoint = endPointXElement.GetAsPoint();
                 using (Line line = new Line(startPoint, endPoint))
                 {
                     btr.AppendEntity(line);
@@ -115,20 +108,20 @@ namespace CadDrawGeometry
             {
                 XElement startPointXElement = curveXelement.Element("StartPoint");
                 Point3d startPoint = new Point3d(
-                    Convert.ToDouble(startPointXElement?.Attribute("X")?.Value),
-                    Convert.ToDouble(startPointXElement?.Attribute("Y")?.Value),
-                    Convert.ToDouble(startPointXElement?.Attribute("Z")?.Value));
+                    double.Parse(startPointXElement?.Attribute("X")?.Value),
+                    double.Parse(startPointXElement?.Attribute("Y")?.Value),
+                    double.Parse(startPointXElement?.Attribute("Z")?.Value));
                 XElement endPointXElement = curveXelement.Element("EndPoint");
                 Point3d endPoint = new Point3d(
-                    Convert.ToDouble(endPointXElement?.Attribute("X")?.Value),
-                    Convert.ToDouble(endPointXElement?.Attribute("Y")?.Value),
-                    Convert.ToDouble(endPointXElement?.Attribute("Z")?.Value));
+                    double.Parse(endPointXElement?.Attribute("X")?.Value),
+                    double.Parse(endPointXElement?.Attribute("Y")?.Value),
+                    double.Parse(endPointXElement?.Attribute("Z")?.Value));
 
                 XElement pointOnArcXElement = curveXelement.Element("PointOnArc");
                 Point3d pointOnArc = new Point3d(
-                    Convert.ToDouble(pointOnArcXElement?.Attribute("X")?.Value),
-                    Convert.ToDouble(pointOnArcXElement?.Attribute("Y")?.Value),
-                    Convert.ToDouble(pointOnArcXElement?.Attribute("Z")?.Value)
+                    double.Parse(pointOnArcXElement?.Attribute("X")?.Value),
+                    double.Parse(pointOnArcXElement?.Attribute("Y")?.Value),
+                    double.Parse(pointOnArcXElement?.Attribute("Z")?.Value)
                 );
                 // create a CircularArc3d
                 CircularArc3d carc = new CircularArc3d(startPoint, pointOnArc, endPoint);
@@ -154,18 +147,12 @@ namespace CadDrawGeometry
             foreach (XElement curveXelement in root.Elements("Circle"))
             {
                 XElement centerPointXElement = curveXelement.Element("CenterPoint");
-                Point3d centerPoint = new Point3d(
-                    Convert.ToDouble(centerPointXElement?.Attribute("X")?.Value),
-                    Convert.ToDouble(centerPointXElement?.Attribute("Y")?.Value),
-                    Convert.ToDouble(centerPointXElement?.Attribute("Z")?.Value));
+                Point3d centerPoint = centerPointXElement.GetAsPoint();
                 XElement vectorNormalXElement = curveXelement.Element("VectorNormal");
-                Vector3d vectorNormal = new Vector3d(
-                    Convert.ToDouble(vectorNormalXElement?.Attribute("X")?.Value),
-                    Convert.ToDouble(vectorNormalXElement?.Attribute("Y")?.Value),
-                    Convert.ToDouble(vectorNormalXElement?.Attribute("Z")?.Value));
+                Vector3d vectorNormal = vectorNormalXElement.GetAsPoint().GetAsVector();
 
 
-                using (Circle circle = new Circle(centerPoint, vectorNormal, Convert.ToDouble(curveXelement.Element("Radius")?.Value)))
+                using (Circle circle = new Circle(centerPoint, vectorNormal, double.Parse(curveXelement.Element("Radius")?.Value)))
                 {
                     btr.AppendEntity(circle);
                     tr.AddNewlyCreatedDBObject(circle, true);
@@ -178,15 +165,9 @@ namespace CadDrawGeometry
             foreach (XElement rayXElement in root.Elements("Ray"))
             {
                 XElement originXElement = rayXElement.Element("Origin");
-                Point3d originPoint = new Point3d(
-                    Convert.ToDouble(originXElement?.Attribute("X")?.Value),
-                    Convert.ToDouble(originXElement?.Attribute("Y")?.Value),
-                    Convert.ToDouble(originXElement?.Attribute("Z")?.Value));
+                Point3d originPoint = originXElement.GetAsPoint();
                 XElement directionXElement = rayXElement.Element("Direction");
-                Vector3d direction = new Vector3d(
-                    Convert.ToDouble(directionXElement?.Attribute("X")?.Value),
-                    Convert.ToDouble(directionXElement?.Attribute("Y")?.Value),
-                    Convert.ToDouble(directionXElement?.Attribute("Z")?.Value));
+                Vector3d direction = directionXElement.GetAsPoint().GetAsVector();
 
                 using (Ray ray = new Ray())
                 {
@@ -202,10 +183,7 @@ namespace CadDrawGeometry
         {
             foreach (var xElement in root.Elements("Point"))
             {
-                Point3d startPoint = new Point3d(
-                    Convert.ToDouble(xElement?.Attribute("X")?.Value),
-                    Convert.ToDouble(xElement?.Attribute("Y")?.Value),
-                    Convert.ToDouble(xElement?.Attribute("Z")?.Value));
+                Point3d startPoint = xElement.GetAsPoint();
                 DBPoint dbPoint = new DBPoint(startPoint);
                 btr.AppendEntity(dbPoint);
                 tr.AddNewlyCreatedDBObject(dbPoint, true);
