@@ -107,22 +107,11 @@ namespace CadDrawGeometry
             foreach (XElement curveXelement in root.Elements("Arc"))
             {
                 XElement startPointXElement = curveXelement.Element("StartPoint");
-                Point3d startPoint = new Point3d(
-                    double.Parse(startPointXElement?.Attribute("X")?.Value),
-                    double.Parse(startPointXElement?.Attribute("Y")?.Value),
-                    double.Parse(startPointXElement?.Attribute("Z")?.Value));
+                Point3d startPoint = startPointXElement.GetAsPoint();
                 XElement endPointXElement = curveXelement.Element("EndPoint");
-                Point3d endPoint = new Point3d(
-                    double.Parse(endPointXElement?.Attribute("X")?.Value),
-                    double.Parse(endPointXElement?.Attribute("Y")?.Value),
-                    double.Parse(endPointXElement?.Attribute("Z")?.Value));
-
+                Point3d endPoint = endPointXElement.GetAsPoint();
                 XElement pointOnArcXElement = curveXelement.Element("PointOnArc");
-                Point3d pointOnArc = new Point3d(
-                    double.Parse(pointOnArcXElement?.Attribute("X")?.Value),
-                    double.Parse(pointOnArcXElement?.Attribute("Y")?.Value),
-                    double.Parse(pointOnArcXElement?.Attribute("Z")?.Value)
-                );
+                Point3d pointOnArc = pointOnArcXElement.GetAsPoint();
                 // create a CircularArc3d
                 CircularArc3d carc = new CircularArc3d(startPoint, pointOnArc, endPoint);
 

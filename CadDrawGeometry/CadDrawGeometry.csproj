@@ -31,15 +31,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="accoremgd">
-      <HintPath>..\..\..\_Acad dlls\2013\accoremgd.dll</HintPath>
+      <HintPath>C:\_Acad dlls\2013\accoremgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="acdbmgd">
-      <HintPath>..\..\..\_Acad dlls\2013\acdbmgd.dll</HintPath>
+      <HintPath>C:\_Acad dlls\2013\acdbmgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="acmgd">
-      <HintPath>..\..\..\_Acad dlls\2013\acmgd.dll</HintPath>
+      <HintPath>C:\_Acad dlls\2013\acmgd.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
