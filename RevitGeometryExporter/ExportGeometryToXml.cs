@@ -79,8 +79,10 @@ namespace RevitGeometryExporter
         #endregion
 
         #region Geometry objects
+
         public static void ExportSolidsByFaces(List<Solid> solids, string header)
         {
+            CheckFolder();
             List<Face> faces = new List<Face>();
             foreach (Solid solid in solids)
             {
@@ -92,8 +94,23 @@ namespace RevitGeometryExporter
             if (faces.Any())
                 ExportFaces(faces, header);
         }
+
+        public static void ExportSolid(Solid solid, string header)
+        {
+            CheckFolder();
+            List<Face> faces = new List<Face>();
+
+            foreach (Face solidFace in solid.Faces)
+            {
+                faces.Add(solidFace);
+            }
+            if (faces.Any())
+                ExportFaces(faces, header);
+        }
+
         public static void ExportFaces(List<Face> faces, string header)
         {
+            CheckFolder();
             List<Curve> wallCurves = new List<Curve>();
 
             foreach (Face face in faces)
@@ -109,8 +126,26 @@ namespace RevitGeometryExporter
             }
             ExportCurves(wallCurves, header);
         }
+
+        public static void ExportFace(Face face, string header)
+        {
+            CheckFolder();
+            List<Curve> wallCurves = new List<Curve>();
+
+            EdgeArrayArray edgeArrayArray = face.EdgeLoops;
+            foreach (EdgeArray edgeArray in edgeArrayArray)
+            {
+                foreach (Edge edge in edgeArray)
+                {
+                    wallCurves.Add(edge.AsCurve());
+                }
+            }
+            ExportCurves(wallCurves, header);
+        }
+
         public static void ExportFaces(List<PlanarFace> planarFaces, string header)
         {
+            CheckFolder();
             List<Curve> wallCurves = new List<Curve>();
 
             foreach (PlanarFace planarFace in planarFaces)
@@ -126,6 +161,7 @@ namespace RevitGeometryExporter
             }
             ExportCurves(wallCurves, header);
         }
+
         public static void ExportCurves(List<Curve> curves, string header)
         {
             CheckFolder();
@@ -155,8 +191,35 @@ namespace RevitGeometryExporter
             root.Save(Path.Combine(FolderName, GetFileName(header)));
         }
 
+        public static void ExportCurve(Curve curve, string header)
+        {
+            CheckFolder();
+            XElement root = new XElement("Curves");
+            XElement linesRootXElement = new XElement("Lines");
+            XElement arcsRootXElement = new XElement("Arcs");
+            Line line = curve as Line;
+            if (line != null)
+            {
+                var lineXel = GetGeometryFromObjects.GetXElementFromLine(line);
+                if (lineXel != null)
+                    linesRootXElement.Add(lineXel);
+            }
+            Arc arc = curve as Arc;
+            if (arc != null)
+            {
+                var arcXel = GetGeometryFromObjects.GetXElementFromArc(arc);
+                if (arcXel != null)
+                    arcsRootXElement.Add(arcXel);
+            }
+            if (linesRootXElement.HasElements) root.Add(linesRootXElement);
+            if (arcsRootXElement.HasElements) root.Add(arcsRootXElement);
+
+            root.Save(Path.Combine(FolderName, GetFileName(header)));
+        }
+
         public static void ExportEdges(List<Edge> edges, string header)
         {
+            CheckFolder();
             List<Curve> curves = new List<Curve>();
             foreach (Edge edge in edges)
             {
@@ -164,6 +227,7 @@ namespace RevitGeometryExporter
             }
             ExportCurves(curves, header);
         }
+
         public static void ExportLines(List<Line> lines, string header)
         {
             CheckFolder();
@@ -174,6 +238,15 @@ namespace RevitGeometryExporter
             }
             rootXElement.Save(Path.Combine(FolderName, GetFileName(header)));
         }
+
+        public static void ExportLine(Line line, string header)
+        {
+            CheckFolder();
+            XElement rootXElement = new XElement("Lines");
+            rootXElement.Add(GetGeometryFromObjects.GetXElementFromLine(line));
+            rootXElement.Save(Path.Combine(FolderName, GetFileName(header)));
+        }
+
         public static void ExportArcs(List<Arc> arcs, string header)
         {
             CheckFolder();
@@ -184,6 +257,7 @@ namespace RevitGeometryExporter
             }
             rootXElement.Save(Path.Combine(FolderName, GetFileName(header)));
         }
+
         public static void ExportPoints(List<XYZ> points, string header)
         {
             CheckFolder();
@@ -194,6 +268,15 @@ namespace RevitGeometryExporter
             }
             rootXElement.Save(Path.Combine(FolderName, GetFileName(header)));
         }
+
+        public static void ExportPoint(XYZ point, string header)
+        {
+            CheckFolder();
+            XElement rootXElement = new XElement("Points");
+            rootXElement.Add(GetGeometryFromObjects.GetXElementFromPoint(point));
+            rootXElement.Save(Path.Combine(FolderName, GetFileName(header)));
+        }
+
         #endregion
 
         #region Helpers
