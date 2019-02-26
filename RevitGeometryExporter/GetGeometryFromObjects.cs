@@ -14,14 +14,14 @@ namespace RevitGeometryExporter
                 {
                     XElement lineXElement = new XElement("Line");
                     XElement startPointXElement = new XElement("StartPoint");
-                    startPointXElement.SetAttributeValue("X", line.GetEndPoint(0).X);
-                    startPointXElement.SetAttributeValue("Y", line.GetEndPoint(0).Y);
-                    startPointXElement.SetAttributeValue("Z", line.GetEndPoint(0).Z);
+                    startPointXElement.SetAttributeValue("X", line.GetEndPoint(0).X.ConvertToExportUnits());
+                    startPointXElement.SetAttributeValue("Y", line.GetEndPoint(0).Y.ConvertToExportUnits());
+                    startPointXElement.SetAttributeValue("Z", line.GetEndPoint(0).Z.ConvertToExportUnits());
                     lineXElement.Add(startPointXElement);
                     XElement endPointXElement = new XElement("EndPoint");
-                    endPointXElement.SetAttributeValue("X", line.GetEndPoint(1).X);
-                    endPointXElement.SetAttributeValue("Y", line.GetEndPoint(1).Y);
-                    endPointXElement.SetAttributeValue("Z", line.GetEndPoint(1).Z);
+                    endPointXElement.SetAttributeValue("X", line.GetEndPoint(1).X.ConvertToExportUnits());
+                    endPointXElement.SetAttributeValue("Y", line.GetEndPoint(1).Y.ConvertToExportUnits());
+                    endPointXElement.SetAttributeValue("Z", line.GetEndPoint(1).Z.ConvertToExportUnits());
                     lineXElement.Add(endPointXElement);
                     return lineXElement;
                 }
@@ -29,14 +29,14 @@ namespace RevitGeometryExporter
                 {
                     XElement rayXElement = new XElement("Ray");
                     XElement originPointXElement = new XElement("Origin");
-                    originPointXElement.SetAttributeValue("X", line.Origin.X);
-                    originPointXElement.SetAttributeValue("Y", line.Origin.Y);
-                    originPointXElement.SetAttributeValue("Z", line.Origin.Z);
+                    originPointXElement.SetAttributeValue("X", line.Origin.X.ConvertToExportUnits());
+                    originPointXElement.SetAttributeValue("Y", line.Origin.Y.ConvertToExportUnits());
+                    originPointXElement.SetAttributeValue("Z", line.Origin.Z.ConvertToExportUnits());
                     rayXElement.Add(originPointXElement);
                     XElement directionXElement = new XElement("Direction");
-                    directionXElement.SetAttributeValue("X", line.Direction.X);
-                    directionXElement.SetAttributeValue("Y", line.Direction.Y);
-                    directionXElement.SetAttributeValue("Z", line.Direction.Z);
+                    directionXElement.SetAttributeValue("X", line.Direction.X.ConvertToExportUnits());
+                    directionXElement.SetAttributeValue("Y", line.Direction.Y.ConvertToExportUnits());
+                    directionXElement.SetAttributeValue("Z", line.Direction.Z.ConvertToExportUnits());
                     rayXElement.Add(directionXElement);
                     return rayXElement;
                 }
@@ -46,6 +46,7 @@ namespace RevitGeometryExporter
                 return null;
             }
         }
+
         internal static XElement GetXElementFromArc(Arc arc)
         {
             try
@@ -54,19 +55,19 @@ namespace RevitGeometryExporter
                 {
                     XElement arcXElement = new XElement("Arc");
                     XElement element = new XElement("StartPoint");
-                    element.SetAttributeValue("X", arc.GetEndPoint(0).X);
-                    element.SetAttributeValue("Y", arc.GetEndPoint(0).Y);
-                    element.SetAttributeValue("Z", arc.GetEndPoint(0).Z);
+                    element.SetAttributeValue("X", arc.GetEndPoint(0).X.ConvertToExportUnits());
+                    element.SetAttributeValue("Y", arc.GetEndPoint(0).Y.ConvertToExportUnits());
+                    element.SetAttributeValue("Z", arc.GetEndPoint(0).Z.ConvertToExportUnits());
                     arcXElement.Add(element);
                     element = new XElement("EndPoint");
-                    element.SetAttributeValue("X", arc.GetEndPoint(1).X);
-                    element.SetAttributeValue("Y", arc.GetEndPoint(1).Y);
-                    element.SetAttributeValue("Z", arc.GetEndPoint(1).Z);
+                    element.SetAttributeValue("X", arc.GetEndPoint(1).X.ConvertToExportUnits());
+                    element.SetAttributeValue("Y", arc.GetEndPoint(1).Y.ConvertToExportUnits());
+                    element.SetAttributeValue("Z", arc.GetEndPoint(1).Z.ConvertToExportUnits());
                     arcXElement.Add(element);
                     element = new XElement("PointOnArc");
-                    element.SetAttributeValue("X", arc.Tessellate()[1].X);
-                    element.SetAttributeValue("Y", arc.Tessellate()[1].Y);
-                    element.SetAttributeValue("Z", arc.Tessellate()[1].Z);
+                    element.SetAttributeValue("X", arc.Tessellate()[1].X.ConvertToExportUnits());
+                    element.SetAttributeValue("Y", arc.Tessellate()[1].Y.ConvertToExportUnits());
+                    element.SetAttributeValue("Z", arc.Tessellate()[1].Z.ConvertToExportUnits());
                     arcXElement.Add(element);
                     return arcXElement;
                 }
@@ -74,14 +75,14 @@ namespace RevitGeometryExporter
                 {
                     XElement circleXElement = new XElement("Circle");
                     XElement centerPoint = new XElement("CenterPoint");
-                    centerPoint.SetAttributeValue("X", arc.Center.X);
-                    centerPoint.SetAttributeValue("Y", arc.Center.Y);
-                    centerPoint.SetAttributeValue("Z", arc.Center.Z);
+                    centerPoint.SetAttributeValue("X", arc.Center.X.ConvertToExportUnits());
+                    centerPoint.SetAttributeValue("Y", arc.Center.Y.ConvertToExportUnits());
+                    centerPoint.SetAttributeValue("Z", arc.Center.Z.ConvertToExportUnits());
                     circleXElement.Add(centerPoint);
                     XElement vector = new XElement("VectorNormal");
-                    vector.SetAttributeValue("X", arc.Normal.X);
-                    vector.SetAttributeValue("Y", arc.Normal.Y);
-                    vector.SetAttributeValue("Z", arc.Normal.Z);
+                    vector.SetAttributeValue("X", arc.Normal.X.ConvertToExportUnits());
+                    vector.SetAttributeValue("Y", arc.Normal.Y.ConvertToExportUnits());
+                    vector.SetAttributeValue("Z", arc.Normal.Z.ConvertToExportUnits());
                     circleXElement.Add(vector);
 
                     circleXElement.SetElementValue("Radius", arc.Radius);
@@ -93,13 +94,22 @@ namespace RevitGeometryExporter
                 return null;
             }
         }
+
         internal static XElement GetXElementFromPoint(XYZ point)
         {
             XElement pointXElement = new XElement("Point");
-            pointXElement.SetAttributeValue("X", point.X);
-            pointXElement.SetAttributeValue("Y", point.Y);
-            pointXElement.SetAttributeValue("Z", point.Z);
+            pointXElement.SetAttributeValue("X", point.X.ConvertToExportUnits());
+            pointXElement.SetAttributeValue("Y", point.Y.ConvertToExportUnits());
+            pointXElement.SetAttributeValue("Z", point.Z.ConvertToExportUnits());
             return pointXElement;
+        }
+
+        private static double ConvertToExportUnits(this double valueInFt)
+        {
+            if (ExportGeometryToXml.ExportUnits == ExportUnits.Mm)
+                return UnitUtils.ConvertFromInternalUnits(valueInFt, DisplayUnitType.DUT_MILLIMETERS);
+
+            return valueInFt;
         }
     }
 }

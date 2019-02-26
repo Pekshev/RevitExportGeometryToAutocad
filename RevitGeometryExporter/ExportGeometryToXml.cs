@@ -12,6 +12,8 @@ namespace RevitGeometryExporter
     {
         public static string FolderName = @"C:\Temp\RevitExportXml";
 
+        public static ExportUnits ExportUnits = ExportUnits.Ft;
+
         #region Elements
 
         public static void ExportWallsByFaces(List<Wall> walls, string header)
@@ -35,6 +37,25 @@ namespace RevitGeometryExporter
             ExportCurves(curves, header);
         }
 
+        public static void ExportWallByFaces(Wall wall, string header)
+        {
+            Options options = new Options();
+            List<Curve> curves = new List<Curve>();
+
+            IEnumerable<GeometryObject> geometry = wall.get_Geometry(options);
+            foreach (GeometryObject geometryObject in geometry)
+            {
+                if (geometryObject is Solid solid)
+                {
+                    foreach (Face face in solid.Faces)
+                        foreach (EdgeArray edgeArray in face.EdgeLoops)
+                            foreach (Edge edge in edgeArray)
+                                curves.Add(edge.AsCurve());
+                }
+            }
+            ExportCurves(curves, header);
+        }
+
         public static void ExportFamilyInstancesByFaces(List<FamilyInstance> families, string header, bool includeNonVisibleObjects)
         {
             Options options = new Options
@@ -44,35 +65,19 @@ namespace RevitGeometryExporter
             List<Curve> curves = new List<Curve>();
             foreach (FamilyInstance familyInstance in families)
             {
-                foreach (GeometryObject geometryObject in familyInstance.get_Geometry(options))
-                {
-                    GeometryInstance geometryInstance = geometryObject as GeometryInstance;
-                    if (geometryInstance != null)
-                    {
-                        GeometryElement instanceGeometry = geometryInstance.GetInstanceGeometry();
-                        if (instanceGeometry != null)
-                        {
-                            foreach (GeometryObject o in instanceGeometry)
-                            {
-                                if (o is Solid solid)
-                                {
-                                    foreach (Face solidFace in solid.Faces)
-                                        foreach (EdgeArray edgeArray in solidFace.EdgeLoops)
-                                            foreach (Edge edge in edgeArray)
-                                                curves.Add(edge.AsCurve());
-                                }
-                                if (o is Face face)
-                                {
-                                    foreach (EdgeArray edgeArray in face.EdgeLoops)
-                                        foreach (Edge edge in edgeArray)
-                                            curves.Add(edge.AsCurve());
-                                }
-                            }
-                        }
-                    }
-
-                }
+                curves.AddRange(GetCurvesFromFamilyGeometry(familyInstance, options));
             }
+            ExportCurves(curves, header);
+        }
+
+        public static void ExportFamilyInstanceByFaces(FamilyInstance familyInstance, string header, bool includeNonVisibleObjects)
+        {
+            Options options = new Options
+            {
+                IncludeNonVisibleObjects = includeNonVisibleObjects
+            };
+            List<Curve> curves = GetCurvesFromFamilyGeometry(familyInstance, options).ToList();
+            
             ExportCurves(curves, header);
         }
 
@@ -291,6 +296,30 @@ namespace RevitGeometryExporter
         {
             return DateTime.Now.Minute + "_" + DateTime.Now.Second + "_" + DateTime.Now.Millisecond + "_" + header +
                    ".xml";
+        }
+
+        private static IEnumerable<Curve> GetCurvesFromFamilyGeometry(FamilyInstance familyInstance, Options options)
+        {
+            // Если брать сразу трансформированную геометрию с параметром Transform.Identity
+            // то отпадает необходимость получения GeometryInstance
+            var geometryElement = familyInstance.get_Geometry(options).GetTransformed(Transform.Identity);
+
+            foreach (GeometryObject geometryObject in geometryElement)
+            {
+                if (geometryObject is Solid solid)
+                {
+                    foreach (Face solidFace in solid.Faces)
+                    foreach (EdgeArray edgeArray in solidFace.EdgeLoops)
+                    foreach (Edge edge in edgeArray)
+                        yield return edge.AsCurve();
+                }
+                if (geometryObject is Face face)
+                {
+                    foreach (EdgeArray edgeArray in face.EdgeLoops)
+                    foreach (Edge edge in edgeArray)
+                        yield return edge.AsCurve();
+                }
+            }
         }
 
         #endregion

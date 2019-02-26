@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ExportGeometryToXml.cs" />
+    <Compile Include="ExportUnits.cs" />
     <Compile Include="GetGeometryFromObjects.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
