@@ -19,6 +19,12 @@
 ExportGeometryToXml.FolderName = @"C:\Temp";
 ```
 По умолчанию в библиотеке прописан путь *C:\Temp\RevitExportXml*. В случае отсутствия директории она будет создана.
+*   Указать единицы для выгрузки (футы или миллиметры)
+``` csharp
+// setup export units
+ExportGeometryToXml.ExportUnits = ExportUnits.Mm;
+```
+По умолчанию единицы выгрузки установлены в футы.
 *	Вызвать один или несколько методов экспорта геометрии. 
 Например:
 ```csharp
