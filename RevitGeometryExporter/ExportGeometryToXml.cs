@@ -302,24 +302,26 @@ namespace RevitGeometryExporter
         {
             // Если брать сразу трансформированную геометрию с параметром Transform.Identity
             // то отпадает необходимость получения GeometryInstance
-            var geometryElement = familyInstance.get_Geometry(options).GetTransformed(Transform.Identity);
+            var geometryElement = familyInstance.get_Geometry(options)?.GetTransformed(Transform.Identity);
 
-            foreach (GeometryObject geometryObject in geometryElement)
-            {
-                if (geometryObject is Solid solid)
+            if (geometryElement != null)
+                foreach (GeometryObject geometryObject in geometryElement)
                 {
-                    foreach (Face solidFace in solid.Faces)
-                    foreach (EdgeArray edgeArray in solidFace.EdgeLoops)
-                    foreach (Edge edge in edgeArray)
-                        yield return edge.AsCurve();
+                    if (geometryObject is Solid solid)
+                    {
+                        foreach (Face solidFace in solid.Faces)
+                        foreach (EdgeArray edgeArray in solidFace.EdgeLoops)
+                        foreach (Edge edge in edgeArray)
+                            yield return edge.AsCurve();
+                    }
+
+                    if (geometryObject is Face face)
+                    {
+                        foreach (EdgeArray edgeArray in face.EdgeLoops)
+                        foreach (Edge edge in edgeArray)
+                            yield return edge.AsCurve();
+                    }
                 }
-                if (geometryObject is Face face)
-                {
-                    foreach (EdgeArray edgeArray in face.EdgeLoops)
-                    foreach (Edge edge in edgeArray)
-                        yield return edge.AsCurve();
-                }
-            }
         }
 
         #endregion
