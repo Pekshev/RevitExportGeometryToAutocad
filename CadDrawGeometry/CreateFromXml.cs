@@ -1,12 +1,12 @@
-﻿using System.IO;
-using System.Xml.Linq;
-using Autodesk.AutoCAD.DatabaseServices;
-using Autodesk.AutoCAD.Geometry;
-using Autodesk.AutoCAD.Runtime;
-using System.Windows.Forms;
-
-namespace CadDrawGeometry
+﻿namespace CadDrawGeometry
 {
+    using System.IO;
+    using System.Windows.Forms;
+    using System.Xml.Linq;
+    using Autodesk.AutoCAD.DatabaseServices;
+    using Autodesk.AutoCAD.Geometry;
+    using Autodesk.AutoCAD.Runtime;
+
     public class CreateFromXml
     {
         /// <summary>Отрисовка геометрии из одного указанного xml-файла</summary>
@@ -14,9 +14,11 @@ namespace CadDrawGeometry
         public void Create()
         {
             OpenFileDialog ofd = new OpenFileDialog();
-            if (ofd.ShowDialog() != DialogResult.OK) return;
+            if (ofd.ShowDialog() != DialogResult.OK)
+                return;
             DrawGeometryFromFile(ofd.FileName);
         }
+
         /// <summary>Отрисовка геометрии из указанной папки в который должны располагаться xml-файлы</summary>
         [CommandMethod("DrawXmlFromFolder")]
         public void CreateFromFolder()
@@ -31,12 +33,14 @@ namespace CadDrawGeometry
                 }
             }
         }
+
         /// <summary>Отрисовка геометрии из нескольких указанных xml-файлов</summary>
         [CommandMethod("DrawFromSeveralXml")]
         public void CreateFromSeveralFiles()
         {
             OpenFileDialog ofd = new OpenFileDialog { Multiselect = true };
-            if (ofd.ShowDialog() != DialogResult.OK) return;
+            if (ofd.ShowDialog() != DialogResult.OK)
+                return;
             foreach (string fileName in ofd.FileNames)
             {
                 DrawGeometryFromFile(fileName);
@@ -53,38 +57,46 @@ namespace CadDrawGeometry
                 using (var tr = doc.TransactionManager.StartTransaction())
                 {
                     BlockTable bt = tr.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
-                    BlockTableRecord btr = tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
-                    // from root
-                    CreateLines(fileXElement, tr, btr);
-                    CreateRays(fileXElement, tr, btr);
-                    CreateArcs(fileXElement, tr, btr);
-                    CreateCircles(fileXElement, tr, btr);
-                    CreatePoints(fileXElement, tr, btr);
-                    // all in one
-                    XElement lines = fileXElement.Element("Lines");
-                    if (lines != null)
+                    if (bt != null)
                     {
-                        CreateLines(lines, tr, btr);
-                        CreateRays(lines, tr, btr);
+                        BlockTableRecord btr = tr.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
+
+                        // from root
+                        CreateLines(fileXElement, tr, btr);
+                        CreateRays(fileXElement, tr, btr);
+                        CreateArcs(fileXElement, tr, btr);
+                        CreateCircles(fileXElement, tr, btr);
+                        CreatePoints(fileXElement, tr, btr);
+
+                        // all in one
+                        XElement lines = fileXElement.Element("Lines");
+                        if (lines != null)
+                        {
+                            CreateLines(lines, tr, btr);
+                            CreateRays(lines, tr, btr);
+                        }
+
+                        XElement arcs = fileXElement.Element("Arcs");
+                        if (arcs != null)
+                        {
+                            CreateArcs(arcs, tr, btr);
+                            CreateCircles(arcs, tr, btr);
+                        }
+
+                        XElement points = fileXElement.Element("Points");
+                        if (points != null)
+                            CreatePoints(points, tr, btr);
                     }
-                    XElement arcs = fileXElement.Element("Arcs");
-                    if (arcs != null)
-                    {
-                        CreateArcs(arcs, tr, btr);
-                        CreateCircles(arcs, tr, btr);
-                    }
-                    XElement points = fileXElement.Element("Points");
-                    if (points != null) CreatePoints(points, tr, btr);
 
                     tr.Commit();
                 }
             }
             catch (System.Exception exception)
             {
-                Autodesk.AutoCAD.ApplicationServices.Core.Application.DocumentManager.MdiActiveDocument.Editor.WriteMessage(
-                    "\nError: " + exception.Message);
+                exception.PrintException();
             }
         }
+
         /// <summary>Создание отрезков</summary>
         private void CreateLines(XElement root, Transaction tr, BlockTableRecord btr)
         {
@@ -101,6 +113,7 @@ namespace CadDrawGeometry
                 }
             }
         }
+
         /// <summary>Создание дуг</summary>
         private void CreateArcs(XElement root, Transaction tr, BlockTableRecord btr)
         {
@@ -112,6 +125,7 @@ namespace CadDrawGeometry
                 Point3d endPoint = endPointXElement.GetAsPoint();
                 XElement pointOnArcXElement = curveXelement.Element("PointOnArc");
                 Point3d pointOnArc = pointOnArcXElement.GetAsPoint();
+
                 // create a CircularArc3d
                 CircularArc3d carc = new CircularArc3d(startPoint, pointOnArc, endPoint);
 
@@ -126,10 +140,12 @@ namespace CadDrawGeometry
                     btr.AppendEntity(arc);
                     tr.AddNewlyCreatedDBObject(arc, true);
                 }
+
                 // dispose CircularArc3d
                 carc.Dispose();
             }
         }
+
         /// <summary>Создание окружностей</summary>
         private void CreateCircles(XElement root, Transaction tr, BlockTableRecord btr)
         {
@@ -140,14 +156,17 @@ namespace CadDrawGeometry
                 XElement vectorNormalXElement = curveXelement.Element("VectorNormal");
                 Vector3d vectorNormal = vectorNormalXElement.GetAsPoint().GetAsVector();
 
-
-                using (Circle circle = new Circle(centerPoint, vectorNormal, double.Parse(curveXelement.Element("Radius")?.Value)))
+                if (Helpers.TryParseDouble(curveXelement.Element("Radius")?.Value, out var d))
                 {
-                    btr.AppendEntity(circle);
-                    tr.AddNewlyCreatedDBObject(circle, true);
+                    using (Circle circle = new Circle(centerPoint, vectorNormal, d))
+                    {
+                        btr.AppendEntity(circle);
+                        tr.AddNewlyCreatedDBObject(circle, true);
+                    }
                 }
             }
         }
+
         /// <summary>Создание лучей</summary>
         private void CreateRays(XElement root, Transaction tr, BlockTableRecord btr)
         {
@@ -167,6 +186,7 @@ namespace CadDrawGeometry
                 }
             }
         }
+
         /// <summary>Создание точек</summary>
         private void CreatePoints(XElement root, Transaction tr, BlockTableRecord btr)
         {

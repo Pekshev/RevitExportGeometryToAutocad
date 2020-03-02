@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Autodesk.Revit.Attributes;
-using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
-using Autodesk.Revit.UI.Selection;
-using RevitGeometryExporter;
-
-namespace RevitTestCommand
+﻿namespace RevitTestCommand
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Autodesk.Revit.Attributes;
+    using Autodesk.Revit.DB;
+    using Autodesk.Revit.UI;
+    using Autodesk.Revit.UI.Selection;
+    using RevitGeometryExporter;
+
     [Transaction(TransactionMode.Manual)]
     [Regeneration(RegenerationOption.Manual)]
     public class TextExportGeometryCommand : IExternalCommand
@@ -21,6 +21,7 @@ namespace RevitTestCommand
             {
                 // setup export folder
                 ExportGeometryToXml.FolderName = @"C:\Temp";
+
                 // select walls
                 IList<Reference> selectionResult = selection.PickObjects(ObjectType.Element, new WallSelectionFilter(),
                     "Select walls:");
@@ -32,8 +33,10 @@ namespace RevitTestCommand
                         Wall wall = (Wall)doc.GetElement(reference);
                         wallsToExport.Add(wall);
                     }
+
                     ExportGeometryToXml.ExportWallsByFaces(wallsToExport, "walls");
                 }
+
                 // families
                 selectionResult = selection.PickObjects(ObjectType.Element, "Select families:");
                 if (selectionResult.Any())
@@ -42,9 +45,10 @@ namespace RevitTestCommand
                     foreach (Reference reference in selectionResult)
                     {
                         Element el = doc.GetElement(reference);
-                        if(el is FamilyInstance familyInstance)
+                        if (el is FamilyInstance familyInstance)
                             familyInstances.Add(familyInstance);
                     }
+
                     ExportGeometryToXml.ExportFamilyInstancesByFaces(familyInstances, "families", false);
                 }
             }
@@ -59,19 +63,6 @@ namespace RevitTestCommand
             }
 
             return Result.Succeeded;
-        }
-    }
-
-    internal class WallSelectionFilter : ISelectionFilter
-    {
-        public bool AllowElement(Element elem)
-        {
-            return elem is Wall;
-        }
-
-        public bool AllowReference(Reference reference, XYZ position)
-        {
-            throw new NotImplementedException();
         }
     }
 }

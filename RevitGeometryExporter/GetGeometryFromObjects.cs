@@ -1,9 +1,9 @@
-﻿using System;
-using System.Xml.Linq;
-using Autodesk.Revit.DB;
-
-namespace RevitGeometryExporter
+﻿namespace RevitGeometryExporter
 {
+    using System;
+    using System.Xml.Linq;
+    using Autodesk.Revit.DB;
+
     internal static class GetGeometryFromObjects
     {
         internal static XElement GetXElementFromLine(Line line)
@@ -51,7 +51,7 @@ namespace RevitGeometryExporter
         {
             try
             {
-                if (arc.IsBound) // arc!
+                if (arc.IsBound) //// arc!
                 {
                     XElement arcXElement = new XElement("Arc");
                     XElement element = new XElement("StartPoint");
@@ -71,7 +71,7 @@ namespace RevitGeometryExporter
                     arcXElement.Add(element);
                     return arcXElement;
                 }
-                else // circle!
+                else //// circle!
                 {
                     XElement circleXElement = new XElement("Circle");
                     XElement centerPoint = new XElement("CenterPoint");

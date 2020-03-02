@@ -36,6 +36,7 @@
   <ItemGroup>
     <Compile Include="TextExportGeometryCommand.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WallSelectionFilter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RevitGeometryExporter\RevitGeometryExporter.csproj">
