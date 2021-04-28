@@ -106,8 +106,9 @@
 
         private static double ConvertToExportUnits(this double valueInFt)
         {
+            // The UnitUtils is not used here so that there is no error in Revit 2021 and higher
             if (ExportGeometryToXml.ExportUnits == ExportUnits.Mm)
-                return UnitUtils.ConvertFromInternalUnits(valueInFt, DisplayUnitType.DUT_MILLIMETERS);
+                return valueInFt * 304.8;
 
             return valueInFt;
         }
