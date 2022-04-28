@@ -37,7 +37,7 @@
         public static bool TryParseDouble(string value, out double d)
         {
             if (!string.IsNullOrEmpty(value))
-                return double.TryParse(value.Replace(",", "."), NumberStyles.Number, CultureInfo.InvariantCulture, out d);
+                return double.TryParse(value.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out d);
 
             d = double.NaN;
             return false;
