@@ -27,9 +27,19 @@
         /// Initialize
         /// </summary>
         /// <param name="folderName">Full path to the folder where xml files will be saved. The default path is "C:\Temp\RevitExportXml"</param>
+        [Conditional("DEBUG")]
+        public static void Init(string folderName)
+        {
+            FolderName = folderName;
+        }
+
+        /// <summary>
+        /// Initialize
+        /// </summary>
+        /// <param name="folderName">Full path to the folder where xml files will be saved. The default path is "C:\Temp\RevitExportXml"</param>
         /// <param name="exportUnits">Output units</param>
         [Conditional("DEBUG")]
-        public static void Init(string folderName, ExportUnits exportUnits = ExportUnits.Ft)
+        public static void Init(string folderName, ExportUnits exportUnits)
         {
             FolderName = folderName;
             ExportUnits = exportUnits;
