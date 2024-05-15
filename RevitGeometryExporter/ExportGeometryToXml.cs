@@ -24,6 +24,20 @@
         public static ExportUnits ExportUnits = ExportUnits.Ft;
 
         /// <summary>
+        /// Clear <see cref="FolderName"/> (remove all files) if folder exists
+        /// </summary>
+        public static void ClearFolder()
+        {
+            if (Directory.Exists(FolderName))
+            {
+                foreach (var file in Directory.GetFiles(FolderName))
+                {
+                    File.Delete(file);
+                }
+            }
+        }
+
+        /// <summary>
         /// Initialize
         /// </summary>
         /// <param name="folderName">Full path to the folder where xml files will be saved. The default path is "C:\Temp\RevitExportXml"</param>
@@ -43,6 +57,21 @@
         {
             FolderName = folderName;
             ExportUnits = exportUnits;
+        }
+
+        /// <summary>
+        /// Initialize
+        /// </summary>
+        /// <param name="folderName">Full path to the folder where xml files will be saved. The default path is "C:\Temp\RevitExportXml"</param>
+        /// <param name="exportUnits">Output units</param>
+        /// <param name="clearFolder">Clear <see cref="FolderName"/> (remove all files) if folder exists</param>
+        [Conditional("DEBUG")]
+        public static void Init(string folderName, ExportUnits exportUnits, bool clearFolder)
+        {
+            FolderName = folderName;
+            ExportUnits = exportUnits;
+            if (clearFolder)
+                ClearFolder();
         }
 
         #region Elements
@@ -136,7 +165,7 @@
         [Conditional("DEBUG")]
         public static void ExportSolidsByFaces(IEnumerable<Solid> solids, string header)
         {
-            CheckFolder();
+            CreateFolder();
             List<Face> faces = new List<Face>();
             foreach (Solid solid in solids)
             {
@@ -153,7 +182,7 @@
         [Conditional("DEBUG")]
         public static void ExportSolid(Solid solid, string header)
         {
-            CheckFolder();
+            CreateFolder();
             List<Face> faces = new List<Face>();
 
             foreach (Face solidFace in solid.Faces)
@@ -168,7 +197,7 @@
         [Conditional("DEBUG")]
         public static void ExportFaces(IEnumerable<Face> faces, string header)
         {
-            CheckFolder();
+            CreateFolder();
             List<Curve> wallCurves = new List<Curve>();
 
             foreach (Face face in faces)
@@ -189,7 +218,7 @@
         [Conditional("DEBUG")]
         public static void ExportFace(Face face, string header)
         {
-            CheckFolder();
+            CreateFolder();
             List<Curve> wallCurves = new List<Curve>();
 
             EdgeArrayArray edgeArrayArray = face.EdgeLoops;
@@ -207,7 +236,7 @@
         [Conditional("DEBUG")]
         public static void ExportFaces(IEnumerable<PlanarFace> planarFaces, string header)
         {
-            CheckFolder();
+            CreateFolder();
             List<Curve> wallCurves = new List<Curve>();
 
             foreach (PlanarFace planarFace in planarFaces)
@@ -228,7 +257,7 @@
         [Conditional("DEBUG")]
         public static void ExportCurves(IEnumerable<Curve> curves, string header)
         {
-            CheckFolder();
+            CreateFolder();
             XElement root = new XElement("Curves");
             XElement linesRootXElement = new XElement("Lines");
             XElement arcsRootXElement = new XElement("Arcs");
@@ -262,7 +291,7 @@
         [Conditional("DEBUG")]
         public static void ExportCurve(Curve curve, string header)
         {
-            CheckFolder();
+            CreateFolder();
             XElement root = new XElement("Curves");
             XElement linesRootXElement = new XElement("Lines");
             XElement arcsRootXElement = new XElement("Arcs");
@@ -293,7 +322,7 @@
         [Conditional("DEBUG")]
         public static void ExportEdges(IEnumerable<Edge> edges, string header)
         {
-            CheckFolder();
+            CreateFolder();
             List<Curve> curves = new List<Curve>();
             foreach (Edge edge in edges)
             {
@@ -306,7 +335,7 @@
         [Conditional("DEBUG")]
         public static void ExportLines(IEnumerable<Line> lines, string header)
         {
-            CheckFolder();
+            CreateFolder();
             XElement rootXElement = new XElement("Lines");
             foreach (Line line in lines)
             {
@@ -319,7 +348,7 @@
         [Conditional("DEBUG")]
         public static void ExportLine(Line line, string header)
         {
-            CheckFolder();
+            CreateFolder();
             XElement rootXElement = new XElement("Lines");
             rootXElement.Add(GetGeometryFromObjects.GetXElementFromLine(line));
             rootXElement.Save(Path.Combine(FolderName, GetFileName(header)));
@@ -328,7 +357,7 @@
         [Conditional("DEBUG")]
         public static void ExportArcs(IEnumerable<Arc> arcs, string header)
         {
-            CheckFolder();
+            CreateFolder();
             XElement rootXElement = new XElement("Arcs");
             foreach (Arc arc in arcs)
             {
@@ -341,7 +370,7 @@
         [Conditional("DEBUG")]
         public static void ExportPoints(IEnumerable<XYZ> points, string header)
         {
-            CheckFolder();
+            CreateFolder();
             XElement rootXElement = new XElement("Points");
             foreach (XYZ point in points)
             {
@@ -354,7 +383,7 @@
         [Conditional("DEBUG")]
         public static void ExportPoint(XYZ point, string header)
         {
-            CheckFolder();
+            CreateFolder();
             XElement rootXElement = new XElement("Points");
             rootXElement.Add(GetGeometryFromObjects.GetXElementFromPoint(point));
             rootXElement.Save(Path.Combine(FolderName, GetFileName(header)));
@@ -364,14 +393,11 @@
 
         #region Helpers
 
-        private static void CheckFolder()
-        {
-            if (!Directory.Exists(FolderName))
-                Directory.CreateDirectory(FolderName);
-        }
+        private static void CreateFolder() => Directory.CreateDirectory(FolderName);
 
         private static string GetFileName(string header)
         {
+            header = RemoveInvalidChars(header);
             return $"{DateTime.Now.Minute}_{DateTime.Now.Second}_{DateTime.Now.Millisecond}_{header}.xml";
         }
 
@@ -407,6 +433,11 @@
                     }
                 }
             }
+        }
+
+        private static string RemoveInvalidChars(string filename)
+        {
+            return string.Concat(filename.Split(Path.GetInvalidFileNameChars()));
         }
 
         #endregion
