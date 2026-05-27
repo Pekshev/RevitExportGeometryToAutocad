@@ -2,7 +2,6 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.IO;
     using System.Linq;
     using System.Xml.Linq;
@@ -41,7 +40,6 @@
         /// Initialize
         /// </summary>
         /// <param name="folderName">Full path to the folder where xml files will be saved. The default path is "C:\Temp\RevitExportXml"</param>
-        [Conditional("DEBUG")]
         public static void Init(string folderName)
         {
             FolderName = folderName;
@@ -52,7 +50,6 @@
         /// </summary>
         /// <param name="folderName">Full path to the folder where xml files will be saved. The default path is "C:\Temp\RevitExportXml"</param>
         /// <param name="exportUnits">Output units</param>
-        [Conditional("DEBUG")]
         public static void Init(string folderName, ExportUnits exportUnits)
         {
             FolderName = folderName;
@@ -65,7 +62,6 @@
         /// <param name="folderName">Full path to the folder where xml files will be saved. The default path is "C:\Temp\RevitExportXml"</param>
         /// <param name="exportUnits">Output units</param>
         /// <param name="clearFolder">Clear <see cref="FolderName"/> (remove all files) if folder exists</param>
-        [Conditional("DEBUG")]
         public static void Init(string folderName, ExportUnits exportUnits, bool clearFolder)
         {
             FolderName = folderName;
@@ -76,7 +72,7 @@
 
         #region Elements
 
-        [Conditional("DEBUG")]
+
         public static void ExportWallsByFaces(IEnumerable<Wall> walls, string header)
         {
             Options options = new Options();
@@ -103,7 +99,7 @@
             ExportCurves(curves, header);
         }
 
-        [Conditional("DEBUG")]
+
         public static void ExportWallByFaces(Wall wall, string header)
         {
             Options options = new Options();
@@ -128,7 +124,7 @@
             ExportCurves(curves, header);
         }
 
-        [Conditional("DEBUG")]
+
         public static void ExportFamilyInstancesByFaces(
             IEnumerable<FamilyInstance> families, string header, bool includeNonVisibleObjects)
         {
@@ -145,7 +141,7 @@
             ExportCurves(curves, header);
         }
 
-        [Conditional("DEBUG")]
+
         public static void ExportFamilyInstanceByFaces(
             FamilyInstance familyInstance, string header, bool includeNonVisibleObjects)
         {
@@ -154,7 +150,7 @@
                 IncludeNonVisibleObjects = includeNonVisibleObjects
             };
             List<Curve> curves = GetCurvesFromFamilyGeometry(familyInstance, options).ToList();
-            
+
             ExportCurves(curves, header);
         }
 
@@ -162,7 +158,7 @@
 
         #region Geometry objects
 
-        [Conditional("DEBUG")]
+
         public static void ExportSolidsByFaces(IEnumerable<Solid> solids, string header)
         {
             CreateFolder();
@@ -179,7 +175,7 @@
                 ExportFaces(faces, header);
         }
 
-        [Conditional("DEBUG")]
+
         public static void ExportSolid(Solid solid, string header)
         {
             CreateFolder();
@@ -194,7 +190,7 @@
                 ExportFaces(faces, header);
         }
 
-        [Conditional("DEBUG")]
+
         public static void ExportFaces(IEnumerable<Face> faces, string header)
         {
             CreateFolder();
@@ -215,7 +211,7 @@
             ExportCurves(wallCurves, header);
         }
 
-        [Conditional("DEBUG")]
+
         public static void ExportFace(Face face, string header)
         {
             CreateFolder();
@@ -233,7 +229,7 @@
             ExportCurves(wallCurves, header);
         }
 
-        [Conditional("DEBUG")]
+
         public static void ExportFaces(IEnumerable<PlanarFace> planarFaces, string header)
         {
             CreateFolder();
@@ -254,7 +250,7 @@
             ExportCurves(wallCurves, header);
         }
 
-        [Conditional("DEBUG")]
+
         public static void ExportCurves(IEnumerable<Curve> curves, string header)
         {
             CreateFolder();
@@ -288,7 +284,7 @@
             root.Save(Path.Combine(FolderName, GetFileName(header)));
         }
 
-        [Conditional("DEBUG")]
+
         public static void ExportCurve(Curve curve, string header)
         {
             CreateFolder();
@@ -319,7 +315,7 @@
             root.Save(Path.Combine(FolderName, GetFileName(header)));
         }
 
-        [Conditional("DEBUG")]
+
         public static void ExportEdges(IEnumerable<Edge> edges, string header)
         {
             CreateFolder();
@@ -332,7 +328,7 @@
             ExportCurves(curves, header);
         }
 
-        [Conditional("DEBUG")]
+
         public static void ExportLines(IEnumerable<Line> lines, string header)
         {
             CreateFolder();
@@ -345,7 +341,7 @@
             rootXElement.Save(Path.Combine(FolderName, GetFileName(header)));
         }
 
-        [Conditional("DEBUG")]
+
         public static void ExportLine(Line line, string header)
         {
             CreateFolder();
@@ -354,7 +350,7 @@
             rootXElement.Save(Path.Combine(FolderName, GetFileName(header)));
         }
 
-        [Conditional("DEBUG")]
+
         public static void ExportArcs(IEnumerable<Arc> arcs, string header)
         {
             CreateFolder();
@@ -367,7 +363,7 @@
             rootXElement.Save(Path.Combine(FolderName, GetFileName(header)));
         }
 
-        [Conditional("DEBUG")]
+
         public static void ExportPoints(IEnumerable<XYZ> points, string header)
         {
             CreateFolder();
@@ -380,7 +376,7 @@
             rootXElement.Save(Path.Combine(FolderName, GetFileName(header)));
         }
 
-        [Conditional("DEBUG")]
+
         public static void ExportPoint(XYZ point, string header)
         {
             CreateFolder();
