@@ -13,7 +13,7 @@
   <!-- NuGet -->
   <PropertyGroup>
     <PackageId>RevitGeometryExporter</PackageId>
-    <Version>1.3.0</Version>
+    <Version>1.3.1</Version>
     <Authors>ModPlus</Authors>
     <Description>Debug-only export of Revit geometry to xml for drawing in AutoCAD. All public methods are [Conditional("DEBUG")]; the assembly is copied to the output folder only when the consuming project defines DEBUG.</Description>
     <PackageTags>Revit;Debug;Geometry</PackageTags>

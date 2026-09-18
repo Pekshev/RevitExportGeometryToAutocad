@@ -3,15 +3,22 @@
   <!--
     RevitGeometryExporter is needed only while debugging.
     The assembly is referenced for compilation in every configuration (so the code compiles),
-    but calls to [Conditional("DEBUG")] methods are removed by the compiler when DEBUG is not defined,
-    and here the assembly is removed from the output folder in that case.
+    calls to [Conditional("DEBUG")] methods are removed by the compiler when DEBUG is not defined.
+
+    This target controls copying of the assembly to the output folder by the DEBUG constant of the consuming project:
+    - DEBUG defined: the assembly is copied, even if the project does not copy NuGet dependencies
+      (SDK-style class libraries for net5+ with CopyLocalLockFileAssemblies = false)
+    - DEBUG not defined: the assembly is not copied
   -->
-  <Target Name="RevitGeometryExporter_ExcludeFromOutput"
-          AfterTargets="ResolveAssemblyReferences"
-          Condition="!$([System.String]::Copy(';$(DefineConstants);').Contains(';DEBUG;'))">
+  <Target Name="RevitGeometryExporter_CopyLocal" AfterTargets="ResolveAssemblyReferences">
+    <PropertyGroup>
+      <_RevitGeometryExporterIsDebug>$([System.String]::Copy(';$(DefineConstants);').Contains(';DEBUG;'))</_RevitGeometryExporterIsDebug>
+    </PropertyGroup>
     <ItemGroup>
       <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)"
                                Condition="'%(ReferenceCopyLocalPaths.Filename)' == 'RevitGeometryExporter'" />
+      <ReferenceCopyLocalPaths Include="@(ReferencePath)"
+                               Condition="'$(_RevitGeometryExporterIsDebug)' == 'true' And '%(ReferencePath.Filename)' == 'RevitGeometryExporter'" />
     </ItemGroup>
   </Target>
 
