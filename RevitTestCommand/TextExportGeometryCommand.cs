@@ -20,7 +20,7 @@
             try
             {
                 // setup export folder
-                ExportGeometryToXml.FolderName = @"C:\Temp";
+                ExportGeometryToXml.Init(@"C:\Temp");
 
                 // select walls
                 IList<Reference> selectionResult = selection.PickObjects(ObjectType.Element, new WallSelectionFilter(),

@@ -1,0 +1,18 @@
+<Project>
+
+  <!--
+    RevitGeometryExporter is needed only while debugging.
+    The assembly is referenced for compilation in every configuration (so the code compiles),
+    but calls to [Conditional("DEBUG")] methods are removed by the compiler when DEBUG is not defined,
+    and here the assembly is removed from the output folder in that case.
+  -->
+  <Target Name="RevitGeometryExporter_ExcludeFromOutput"
+          AfterTargets="ResolveAssemblyReferences"
+          Condition="!$([System.String]::Copy(';$(DefineConstants);').Contains(';DEBUG;'))">
+    <ItemGroup>
+      <ReferenceCopyLocalPaths Remove="@(ReferenceCopyLocalPaths)"
+                               Condition="'%(ReferenceCopyLocalPaths.Filename)' == 'RevitGeometryExporter'" />
+    </ItemGroup>
+  </Target>
+
+</Project>
